@@ -29,8 +29,8 @@ option('mkl_libdirs',
        description: 'Paths to MKL libraries')
 
 option('mkl_include',
-       type: 'array',
-       value: ['/opt/intel/mkl/include'],
+       type: 'string',
+       value: '/opt/intel/mkl/include',
        description: 'Paths to MKL libraries')
 
 option('dnnl_dir',
@@ -87,6 +87,11 @@ option('plain_cuda',
        type: 'boolean',
        value: true,
        description: 'Enable CUDA backend')
+
+option('hip',
+       type: 'boolean',
+       value: false,
+       description: 'Enable ROCm/HIP backend (lc0 CUDA kernels compiled with hipcc)')
 
 option('cutlass',
        type: 'boolean',
@@ -274,3 +279,13 @@ option('nvcc',
        type: 'boolean',
        value: true,
        description: 'Use nvcc: required for cuda, optional for onnx')
+
+option('corex',
+       type: 'boolean',
+       value: false,
+       description: 'Build the CUDA backend for Iluvatar CoreX (ivcore11) via clang++ -x ivcore')
+
+option('corex_root',
+       type: 'string',
+       value: '/usr/local/corex',
+       description: 'Iluvatar CoreX SDK root (clang++, headers, libs)')

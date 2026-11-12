@@ -369,10 +369,11 @@ static void BuildAttacksTable(MagicParams* magic_params,
   }
 }
 
+}  // namespace
+
 // Returns the rook attacks bitboard for the given rook board square and the
 // given occupied piece bitboard.
-static inline BitBoard GetRookAttacks(const Square rook_square,
-                                      const BitBoard pieces) {
+BitBoard GetRookAttacks(const Square rook_square, const BitBoard pieces) {
   // Calculate magic index.
   const uint8_t square = rook_square.as_idx();
 
@@ -390,8 +391,7 @@ static inline BitBoard GetRookAttacks(const Square rook_square,
 
 // Returns the bishop attacks bitboard for the given bishop board square and
 // the given occupied piece bitboard.
-static inline BitBoard GetBishopAttacks(const Square bishop_square,
-                                        const BitBoard pieces) {
+BitBoard GetBishopAttacks(const Square bishop_square, const BitBoard pieces) {
   // Calculate magic index.
   const uint8_t square = bishop_square.as_idx();
 
@@ -407,8 +407,6 @@ static inline BitBoard GetBishopAttacks(const Square bishop_square,
   // Return attacks bitboard.
   return bishop_magic_params[square].attacks_table_[index];
 }
-
-}  // namespace
 
 void InitializeMagicBitboards() {
 #if defined(NO_PEXT)
@@ -862,11 +860,6 @@ KingAttackInfo ChessBoard::GenerateKingAttackInfo() const {
   king_attack_info.attack_lines_ =
       king_attack_info.attack_lines_ | attacking_pawns;
 
-  if (attacking_pawns.as_int()) {
-    // No more than one pawn can give check.
-    num_king_attackers++;
-  }
-
   // Check knights.
   const BitBoard attacking_knights =
       kKnightAttacks[our_king_.as_idx()] &
@@ -874,13 +867,9 @@ KingAttackInfo ChessBoard::GenerateKingAttackInfo() const {
   king_attack_info.attack_lines_ =
       king_attack_info.attack_lines_ | attacking_knights;
 
-  if (attacking_knights.as_int()) {
-    // No more than one knight can give check.
-    num_king_attackers++;
-  }
+  num_king_attackers += (attacking_knights | attacking_pawns).count();
 
-  assert(num_king_attackers <= 2);
-  king_attack_info.double_check_ = (num_king_attackers == 2);
+  king_attack_info.double_check_ = (num_king_attackers >= 2);
 
   return king_attack_info;
 }
